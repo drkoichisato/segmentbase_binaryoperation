@@ -25,6 +25,9 @@
 
 #include "segment.h"
 
+/**
+@class example statistics class: must constain constructor,init,append
+*/
 class StatBasic {
 private:
   long sumx;
@@ -46,7 +49,10 @@ public:
 };
 
 
-
+/**
+*@class Blob class expression of one blob
+*@brief StatModel is used for computing statistics features
+*/
 template <class StatModel>
 class Blob {
 private:
@@ -62,6 +68,9 @@ public:
     }
 };
 
+/**
+*@class container for blob
+*/
 template< template<class T, class Allocator=std::allocator<T> > class Container,class StatModel>
 class Blobs {
 private:

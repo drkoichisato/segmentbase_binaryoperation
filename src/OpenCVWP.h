@@ -19,6 +19,9 @@
 
 #include "Segment.h"
 
+/**
+*@class OpenCV Wrapper mainly for input/output Mat object
+*/
 template< template<class T, class Allocator=std::allocator<T> > class Container>
 class SegmentsCV : public Segments<Container> {
 public:
@@ -54,11 +57,6 @@ public:
     Segments<Container>::convertToImage(img.ptr(), channel, channel * this->imageWidth(),colors,Ncolors );
     return img;
   }
-
-  SegmentsCV<Container> &inevert(){
-    return (SegmentsCV<Container>)Segments<Container>::invert();
-  }
-
 };
 
 

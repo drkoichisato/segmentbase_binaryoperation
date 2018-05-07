@@ -23,17 +23,27 @@
 #define SEGMENT_H
 
 #include <memory>
-
+/**
+* @class Segment
+* @brief Segment class consists of 4-short
+*/
 class Segment {
 public:
+  /** L left value */
   short L;
+  /** R right value */
   short R;
+  /** y y value */
   short y;
+  /** id used for labeling */
   unsigned short id;
 public:
   Segment(short _L,short _R,short _y,short _id):L(_L),R(_R),y(_y),id(_id){}
   Segment():L(-1),R(-1),y(-1),id(0){}
 
+  /**
+  @return error Segment
+  */
   static Segment error() {
     return Segment(-1,-1,-1,0);
   }
@@ -137,7 +147,8 @@ public:
 
 
 /**
-*
+* @class Segments container class for Segment
+* specify Container (std::vector will be general use)
 *
 */
 template< template<class T, class Allocator=std::allocator<T> > class Container> class Segments {
@@ -276,6 +287,9 @@ public:
     }
     (*index)[h]=segs->size();
   }
+  /**
+  * @fn clone object
+  */
   Segments<Container> clone() {
     Segments<Container> segments;
     segments.w=this->w;
@@ -285,6 +299,9 @@ public:
 
     return segments;
   }
+  /**
+  * @fn invert binary image
+  */
   Segments<Container> invert() {
     Segments<Container> segments(this->w,this->h);
 
@@ -314,12 +331,23 @@ public:
     return segments;
   }
 
+  /**
+  * @fn convert segments to binary image
+  * @param (bytesPerPixel) bytes per pixel
+  * @param (bytesPerLine) bytes per line
+  */
   std::shared_ptr<unsigned char> convertToImage(const int bytesPerPixel,const int bytesPerLine) {
     std::shared_ptr<unsigned char> img=std::make_shared<unsigned char>(bytesPerLine*this->h);
     this->convertToImage(&*img,bytesPerPixel,bytesPerLine);
     return img;
   }
 
+  /**
+  * @fn convert segments to binary image
+  * @param (img) image to write
+  * @param (bytesPerPixel) bytes per pixel
+  * @param (bytesPerLine) bytes per line
+  */
   void convertToImage(unsigned char *img,const int bytesPerPixel,const int bytesPerLine){
     memset(img,0,h*bytesPerLine);
     for(auto it=segs->begin();it!=segs->end();it++) {
@@ -328,12 +356,27 @@ public:
   }
 
 
+  /**
+  * @fn convert segments to color image based on id
+  * @param (bytesPerPixel) bytes per pixel
+  * @param (bytesPerLine) bytes per line
+  * @param (colors) color table (Ncolors*bytesPerPixel) bytes
+  * @param (Ncolors) number of colors
+  */
   std::shared_ptr<unsigned char> convertToImage(const int bytesPerPixel,const int bytesPerLine,const unsigned char *colors,const int Ncolors) {
     std::shared_ptr<unsigned char> img=std::make_shared<unsigned char>(bytesPerLine*this->h);
     this->convertToImage(&*img,bytesPerPixel,bytesPerLine,colors,Ncolors);
     return img;
   }
 
+  /**
+  * @fn convert segments to color image based on id
+  * @param (img) image to write
+  * @param (bytesPerPixel) bytes per pixel
+  * @param (bytesPerLine) bytes per line
+  * @param (colors) color table (Ncolors*bytesPerPixel) bytes
+  * @param (Ncolors) number of colors
+  */
   void convertToImage(unsigned char *img,const int bytesPerPixel,const int bytesPerLine,const unsigned char *colors,const int Ncolors){
     memset(img,0,h*bytesPerLine);
     int i=0;
@@ -345,6 +388,10 @@ public:
     }
   }
 
+  /**
+  * @fn and operator
+  * AND-opration
+  */
   Segments<Container> operator&(Segments<Container> &a) {
     Segments<Container> ret( std::max(w,a.w), std::max(h,a.h) );
     for(int y=0;y<ret.h;y++) {
@@ -355,7 +402,10 @@ public:
     return ret;
   }
 
-
+  /**
+  * @fn or operator
+  * OR-opration
+  */
   Segments<Container> operator|(Segments<Container> &a) {
     Segments<Container> ret( std::max(w,a.w), std::max(h,a.h) );
     int h_or=std::min(h,a.h);
@@ -384,6 +434,10 @@ public:
     }
     return ret;
   }
+
+  /**
+  * @fn erode operation
+  */
   Segments<Container> erode() {
     Segments<Container> ret(w,h);
     (*ret.index)[0]=0;
@@ -398,6 +452,9 @@ public:
     return ret;
   }
 
+  /**
+  * @fn dilate operation
+  */
   Segments<Container> dilate() {
     Segments<Container> ret(w,h);
     for(int y=0;y<h-1;y++) {
@@ -409,24 +466,43 @@ public:
     return ret;
   }
 
+  /**
+  * @fn open operation
+  */
   Segments<Container> open() {
 
   }
 
+  /**
+  * @fn close operation
+  */
   Segments<Container> close() {
 
   }
+
+
+  /**
+  * @fn reset id of all segments
+  */
   void resetId(short id) {
     for(auto seg : (*segs) ) {
       seg.id = id;
     }
   }
 
+  /**
+  *@fn obtain container pointer
+  */
   std::shared_ptr<Container<Segment>> container(){return segs;}
+  /** @fn segment size*/
   int segmentSize(){return segs->size();}
+  /** @fn image width */
   int imageWidth(){return w;}
+  /** @fn image height*/
   int imageHeight(){return h;}
+  /** @fn top of segment pointer of y */
   Segment *begin(int y) {return &(*segs)[(*index)[y]];}
+  /** @fn end of segment pointer of y */
   Segment *end(int y) {return begin(y+1);}
   void showInfo() {
     std::cout << " Size:" << segs->size() << std::endl;
